@@ -7,7 +7,7 @@ module.exports = {
     name: "help",
     aliases: ["menu", "commands"],
     version: "4.8",
-    author: "NeoKEX",
+    author: "NeoKEX Remake By Mehedi Hassan",
     shortDescription: "Show all available commands",
     longDescription: "Displays a clean and premium-styled categorized list of commands.",
     category: "system",
@@ -45,14 +45,7 @@ module.exports = {
 
     // GIF URLs
     const gifURLs = [
-      "https://i.imgur.com/ejqdK51.gif",
-      "https://i.imgur.com/ltIztKe.gif",
-      "https://i.imgur.com/5oqrQ0i.gif",
-      "https://i.imgur.com/qf2aZH8.gif",
-      "https://i.imgur.com/3QzYyye.gif",
-      "https://i.imgur.com/ffxzucB.gif",
-      "https://i.imgur.com/3QSsSzA.gif",
-      "https://i.imgur.com/Ih819LH.gif"
+      "https://imgur.com/Q2NcBMZ"
     ];
 
     // pick random gif
