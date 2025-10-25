@@ -4,7 +4,7 @@ module.exports = {
   config: {
     name: "drive",
     version: "1.0.0",
-    author: "ArYAN | Modified by Mohammad Akash",
+    author: "ArYAN | Modified by Mehedi Hassan",
     countDown: 5,
     role: 2,
     shortDescription: "Upload media to Google Drive",
@@ -45,7 +45,7 @@ module.exports = {
       // ✅ সফল হলে
       if (driveLink) {
         return api.sendMessage(
-          `✅ 𝙵𝚒𝚕𝚎 সফলভাবে আপলোড হয়েছে!\n\n🔗 Google Drive URL:\n${driveLink}\n\n👤 Uploaded by: 𝙼𝚘𝚑𝚊𝚖𝚖𝚊𝚍 𝙰𝚔𝚊𝚜𝚑`,
+          `✅ 𝙵𝚒𝚕𝚎 সফলভাবে আপলোড হয়েছে!\n\n🔗 Google Drive URL:\n${driveLink}\n\n👤 Uploaded by: Mehedi Hassan`,
           event.threadID,
           event.messageID
         );
