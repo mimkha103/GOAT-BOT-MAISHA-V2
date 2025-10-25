@@ -4,7 +4,7 @@ module.exports = {
   config: {
     name: "leave",
     version: "3.0",
-    author: "Mohammad Akash (Modified by GPT-5)",
+    author: "Mehedi Hassan (Modified by GPT-5)",
     category: "events"
   },
 
@@ -29,7 +29,7 @@ module.exports = {
 আল্লাহ হাফেজ 🤲
 
 ━━━━━━━━━━━━━━━━━━━━━
-🤖 𝙱𝚘𝚝 𝙾𝚠𝚗𝚎𝚛 : 𝙼𝚘𝚑𝚊𝚖𝚖𝚊𝚍 𝙰𝚔𝚊𝚜𝚑
+🤖 𝙱𝚘𝚝 𝙾𝚠𝚗𝚎𝚛 : Mehedi Hassan
 ━━━━━━━━━━━━━━━━━━━━━
 `
     }
