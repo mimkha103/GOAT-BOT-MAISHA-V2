@@ -4,7 +4,7 @@ module.exports = {
   config: {
     name: "autoinvite",
     version: "2.0",
-    author: "Mohammad Akash (Fixed by GPT-5)",
+    author: "Mehedi Hassan (Fixed by GPT-5)",
     category: "events"
   },
 
@@ -25,7 +25,7 @@ module.exports = {
 
 💬 মনে রাখো — গ্রুপ থেকে পালানো যায় না 😉
 ━━━━━━━━━━━━━━━━━━━━━
-𝙱𝚘𝚝 𝙾𝚠𝚗𝚎𝚛 : 𝙼𝚘𝚑𝚊𝚖𝚖𝚊𝚍 𝙰𝚔𝚊𝚜𝚑
+𝙱𝚘𝚝 𝙾𝚠𝚗𝚎𝚛 : Mehedi Hassan
 ━━━━━━━━━━━━━━━━━━━━━`,
         mentions: [{ tag: userName, id: leftID }]
       };
