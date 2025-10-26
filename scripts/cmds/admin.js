@@ -1,116 +1,59 @@
-const { config } = global.GoatBot;
-const { writeFileSync } = require("fs-extra");
+const axios = require("axios");
+const fs = require("fs-extra");
+const request = require("request");
+const moment = require("moment-timezone");
 
 module.exports = {
-	config: {
-		name: "admin",
-		version: "1.6",
-		author: "NTKhang",
-		countDown: 5,
-		role: 2,
-		description: {
-			vi: "Thêm, xóa, sửa quyền admin",
-			en: "Add, remove, edit admin role"
-		},
-		category: "box chat",
-		guide: {
-			vi: '   {pn} [add | -a] <uid | @tag>: Thêm quyền admin cho người dùng'
-				+ '\n	  {pn} [remove | -r] <uid | @tag>: Xóa quyền admin của người dùng'
-				+ '\n	  {pn} [list | -l]: Liệt kê danh sách admin',
-			en: '   {pn} [add | -a] <uid | @tag>: Add admin role for user'
-				+ '\n	  {pn} [remove | -r] <uid | @tag>: Remove admin role of user'
-				+ '\n	  {pn} [list | -l]: List all admins'
-		}
-	},
+  config: {
+    name: "admin",
+    version: "1.0.1",
+    author: "Mehedi Hassan",
+    countDown: 2,7
+    role: 0,
+    shortDescription: "Owner এর তথ্য দেখায়",
+    longDescription: "Bot এর Owner সম্পর্কে বিস্তারিত তথ্য ও কন্টাক্ট লিংক দেখায়",
+    category: "info",
+  },
 
-	langs: {
-		vi: {
-			added: "✅ | Đã thêm quyền admin cho %1 người dùng:\n%2",
-			alreadyAdmin: "\n⚠️ | %1 người dùng đã có quyền admin từ trước rồi:\n%2",
-			missingIdAdd: "⚠️ | Vui lòng nhập ID hoặc tag người dùng muốn thêm quyền admin",
-			removed: "✅ | Đã xóa quyền admin của %1 người dùng:\n%2",
-			notAdmin: "⚠️ | %1 người dùng không có quyền admin:\n%2",
-			missingIdRemove: "⚠️ | Vui lòng nhập ID hoặc tag người dùng muốn xóa quyền admin",
-			listAdmin: "👑 | Danh sách admin:\n%1"
-		},
-		en: {
-			added: "✅ | Added admin role for %1 users:\n%2",
-			alreadyAdmin: "\n⚠️ | %1 users already have admin role:\n%2",
-			missingIdAdd: "⚠️ | Please enter ID or tag user to add admin role",
-			removed: "✅ | Removed admin role of %1 users:\n%2",
-			notAdmin: "⚠️ | %1 users don't have admin role:\n%2",
-			missingIdRemove: "⚠️ | Please enter ID or tag user to remove admin role",
-			listAdmin: "👑 | List of admins:\n%1"
-		}
-	},
+  onStart: async function ({ api, event }) {
+    const time = moment().tz("Asia/Dhaka").format("DD/MM/YYYY hh:mm:ss A");
 
-	onStart: async function ({ message, args, usersData, event, getLang }) {
-		switch (args[0]) {
-			case "add":
-			case "-a": {
-				if (args[1]) {
-					let uids = [];
-					if (Object.keys(event.mentions).length > 0)
-						uids = Object.keys(event.mentions);
-					else if (event.messageReply)
-						uids.push(event.messageReply.senderID);
-					else
-						uids = args.filter(arg => !isNaN(arg));
-					const notAdminIds = [];
-					const adminIds = [];
-					for (const uid of uids) {
-						if (config.adminBot.includes(uid))
-							adminIds.push(uid);
-						else
-							notAdminIds.push(uid);
-					}
+    const callback = () =>
+      api.sendMessage(
+        {
+          body: `
+╭────────────────⭓
+│ 👑 𝗕𝗢𝗧 𝗢𝗪𝗡𝗘𝗥 𝗜𝗡𝗙𝗢  
+├────────────────
+│ 👤 𝐍𝐚𝐦𝐞 : 𝗠𝗲𝗵𝗲𝗱𝗶 𝗛𝗮𝘀𝗮𝗻  
+│ 🚹 𝐆𝐞𝐧𝐝𝐞𝐫 : 𝐌𝐚𝐥𝐞  
+│ ❤️ 𝐑𝐞𝐥𝐚𝐭𝐢𝐨𝐧 : 𝐒𝐢𝐧𝐠𝐥𝐞  
+│ 🎂 𝐀𝐠𝐞 : 𝟐𝟐+  
+│ 🎓 𝐄𝐝𝐮𝐜𝐚𝐭𝐢𝐨𝐧 : 𝗜𝗻𝘁𝗲𝗿 2𝗻𝗱 𝗬𝗲𝗮𝗿  
+│ 🏡 𝐀𝐝𝐝𝐫𝐞𝐬𝐬 : 𝗗𝗵𝗮𝗸𝗮 - 𝗚𝗮𝘇𝗶𝗽𝘂𝗿  
+╰────────────────⭓
 
-					config.adminBot.push(...notAdminIds);
-					const getNames = await Promise.all(uids.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-					writeFileSync(global.client.dirConfig, JSON.stringify(config, null, 2));
-					return message.reply(
-						(notAdminIds.length > 0 ? getLang("added", notAdminIds.length, getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")) : "")
-						+ (adminIds.length > 0 ? getLang("alreadyAdmin", adminIds.length, adminIds.map(uid => `• ${uid}`).join("\n")) : "")
-					);
-				}
-				else
-					return message.reply(getLang("missingIdAdd"));
-			}
-			case "remove":
-			case "-r": {
-				if (args[1]) {
-					let uids = [];
-					if (Object.keys(event.mentions).length > 0)
-						uids = Object.keys(event.mentions)[0];
-					else
-						uids = args.filter(arg => !isNaN(arg));
-					const notAdminIds = [];
-					const adminIds = [];
-					for (const uid of uids) {
-						if (config.adminBot.includes(uid))
-							adminIds.push(uid);
-						else
-							notAdminIds.push(uid);
-					}
-					for (const uid of adminIds)
-						config.adminBot.splice(config.adminBot.indexOf(uid), 1);
-					const getNames = await Promise.all(adminIds.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-					writeFileSync(global.client.dirConfig, JSON.stringify(config, null, 2));
-					return message.reply(
-						(adminIds.length > 0 ? getLang("removed", adminIds.length, getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")) : "")
-						+ (notAdminIds.length > 0 ? getLang("notAdmin", notAdminIds.length, notAdminIds.map(uid => `• ${uid}`).join("\n")) : "")
-					);
-				}
-				else
-					return message.reply(getLang("missingIdRemove"));
-			}
-			case "list":
-			case "-l": {
-				const getNames = await Promise.all(config.adminBot.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-				return message.reply(getLang("listAdmin", getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")));
-			}
-			default:
-				return message.SyntaxError();
-		}
-	}
+╭────────────────⭓
+│ 🌐 𝗖𝗢𝗡𝗧𝗔𝗖𝗧 𝗟𝗜𝗡𝗞  
+├────────────────
+│ 📘 𝗙𝗮𝗰𝗲𝗯𝗼𝗼𝗸:
+│   https://www.facebook.com/profile.php?id=100003016757604
+╰────────────────⭓
+
+╭────────────────⭓
+│ 🕒 𝗨𝗽𝗱𝗮𝘁𝗲𝗱 𝗧𝗶𝗺𝗲  
+├────────────────
+│ ${time}  
+╰────────────────⭓
+`,
+          attachment: fs.createReadStream(__dirname + "/cache/owner.jpg"),
+        },
+        event.threadID,
+        () => fs.unlinkSync(__dirname + "/cache/owner.jpg")
+      );
+
+    request("https://i.imgur.com/eb4x3cK.jpeg")
+      .pipe(fs.createWriteStream(__dirname + "/cache/owner.jpg"))
+      .on("close", () => callback());
+  },
 };
