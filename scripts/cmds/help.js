@@ -45,7 +45,7 @@ module.exports = {
 
     // GIF URLs
     const gifURLs = [
-      "https://imgur.com/Q2NcBMZ"
+      "https://i.imgur.com/eb4x3cK.jpeg"
     ];
 
     // pick random gif
