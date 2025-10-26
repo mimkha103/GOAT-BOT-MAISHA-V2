@@ -1,96 +1,62 @@
+const fs = require("fs-extra");
 const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
-
-let isEnabled = true;
+const ytdl = require("ytdl-core");
+const { alldown } = require("shaon-videos-downloader");
 
 module.exports = {
   config: {
-    name: "alldl",
-    version: "1.4",
-    author: "NeoKEX",
+    name: "play",
+    version: "2.0.0",
+    author: "MOHAMMAD AKASH",
     role: 0,
-    shortDescription: "Auto download media from supported links (no prefix)",
-    longDescription: "Auto detects media links (Instagram, TikTok, etc) and downloads them",
-    category: "media",
-    guide: "Send or reply with a link. No prefix needed.\nUse {p}alldl on/off to toggle feature."
+    description: "Universal video downloader: TikTok, Instagram, YouTube",
+    category: "user",
+    usages: "autodl [video link]",
+    cooldowns: 5
   },
 
-  onStart: async function ({ message, args, event }) {
-    const permission = ["100083039411474"]; 
-    if (["on", "off", "status"].includes(args[0])) {
-      if (!permission.includes(event.senderID)) return message.reply("⚠️ | Only the bot owner can toggle this feature.");
-
-      if (args[0] === "on") {
-        isEnabled = true;
-        return message.reply("✅ | Auto media downloader is now ENABLED.");
-      }
-
-      if (args[0] === "off") {
-        isEnabled = false;
-        return message.reply("❌ | Auto media downloader is now DISABLED.");
-      }
-
-      if (args[0] === "status") {
-        return message.reply(`🔄 | Current status: ${isEnabled ? "ENABLED ✅" : "DISABLED ❌"}`);
-      }
-    }
-
-    const dir = path.join(__dirname, "cache");
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-  },
-
-  onChat: async function ({ api, event }) {
-    if (!isEnabled) return;
-
-    const text = event.body || (event.messageReply && event.messageReply.body);
-    if (!text) return;
-
-    const urlMatch = text.match(/https?:\/\/[^\s]+/);
-    if (!urlMatch) return;
-
-    const url = urlMatch[0];
-    const apiUrl = `https://neokex-apis.onrender.com/alldl?url=${encodeURIComponent(url)}`;
+  onEvent: async function({ api, event }) {
+    const content = event.body ? event.body : "";
+    if (!content.startsWith("https://")) return;
 
     try {
-      api.setMessageReaction("⏳", event.messageID, () => {}, true);
+      api.setMessageReaction("⚠️", event.messageID, (err) => {}, true);
 
-      const res = await axios.get(apiUrl);
-      const result = res.data;
+      let videoUrl;
 
-      if (!result.success || !result.download_url) {
-        api.setMessageReaction("❌", event.messageID, () => {}, true);
-        return; 
+      // 1️⃣ TikTok Lite short link
+      if (content.includes("vm.tiktok.com")) {
+        const res = await axios.get(`https://api.tiktok.com/api/shortlink/resolve/?url=${encodeURIComponent(content)}`);
+        videoUrl = res.data.video_url;
+      } 
+      // 2️⃣ YouTube
+      else if (content.includes("youtube.com") || content.includes("youtu.be")) {
+        videoUrl = await ytdl.getInfo(content).then(info => ytdl.chooseFormat(info.formats, { quality: 'highestvideo' }).url);
+      } 
+      // 3️⃣ Instagram + TikTok normal
+      else {
+        const data = await alldown(content);
+        videoUrl = data.url;
       }
 
-      const mediaUrl = result.download_url;
-      const title = result.title || "Video"; 
-      const fileName = `download.mp4`;
-      const filePath = path.join(__dirname, "cache", fileName);
+      if (!videoUrl) return api.sendMessage("❌ | Could not fetch video URL.", event.threadID, event.messageID);
 
-      let file;
-      try {
-        file = await axios.get(mediaUrl, { responseType: "arraybuffer" });
-      } catch (downloadErr) {
-        console.error("[alldl] Download Error:", downloadErr.message);
-        api.setMessageReaction("❌", event.messageID, () => {}, true);
-        return; 
-      }
-      
-      fs.writeFileSync(filePath, Buffer.from(file.data, "binary"));
+      api.setMessageReaction("☢️", event.messageID, (err) => {}, true);
 
-      api.sendMessage({
-        body: `${title}\nPlatform: ${result.platform}\nDuration: ${result.duration} seconds`,
-        attachment: fs.createReadStream(filePath)
-      }, event.threadID, () => {
-        fs.unlinkSync(filePath);
-        api.setMessageReaction("✅", event.messageID, () => {}, true);
-      }, event.messageID);
+      // Download video
+      const videoData = (await axios.get(videoUrl, { responseType: "arraybuffer" })).data;
+      const path = __dirname + "/cache/auto.mp4";
+      await fs.ensureDir(__dirname + "/cache");
+      await fs.writeFile(path, videoData);
+
+      return api.sendMessage({
+        body: "🤖 | Auto Downloader Complete! Enjoy your video 🎬",
+        attachment: fs.createReadStream(path)
+      }, event.threadID, event.messageID);
 
     } catch (err) {
-      console.error("[alldl] API Error:", err.message);
-      api.setMessageReaction("❌", event.messageID, () => {}, true);
-      return; 
+      console.log("Error:", err);
+      return api.sendMessage("❌ | Failed to download video.", event.threadID, event.messageID);
     }
   }
 };
