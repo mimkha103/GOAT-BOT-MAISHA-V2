@@ -1,14 +1,14 @@
-const axios = require("axios");
+/cmd install owner.js const axios = require("axios");
 const fs = require("fs-extra");
 const request = require("request");
 const moment = require("moment-timezone");
 
 module.exports = {
   config: {
-    name: "admin",
+    name: "owner",
     version: "1.0.1",
-    author: "Mehedi Hassan",
-    countDown: 2,7
+    author: "MOHAMMAD AKASH",
+    countDown: 2,
     role: 0,
     shortDescription: "Owner এর তথ্য দেখায়",
     longDescription: "Bot এর Owner সম্পর্কে বিস্তারিত তথ্য ও কন্টাক্ট লিংক দেখায়",
@@ -37,7 +37,7 @@ module.exports = {
 │ 🌐 𝗖𝗢𝗡𝗧𝗔𝗖𝗧 𝗟𝗜𝗡𝗞  
 ├────────────────
 │ 📘 𝗙𝗮𝗰𝗲𝗯𝗼𝗼𝗸:
-│   https://www.facebook.com/profile.php?id=100003016757604
+│ https://www.facebook.com/profile.php?id=100003016757604   
 ╰────────────────⭓
 
 ╭────────────────⭓
