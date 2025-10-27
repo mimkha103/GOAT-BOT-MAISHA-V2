@@ -6,7 +6,7 @@ module.exports = {
     config: {
         name: "welcome",
         version: "2.0",
-        author: "Mehedi Hassan",
+        author: "Helal",
         category: "events"
     },
 
@@ -115,4 +115,16 @@ Have a nice {session}! 🍁`
                         const files = threadData.data.welcomeAttachment;
                         const attachments = files.reduce((acc, file) => {
                             acc.push(drive.getFile(file, "stream"));
-                            ret
+                            return acc;
+                        }, []);
+                        form.attachment = (await Promise.allSettled(attachments))
+                            .filter(({ status }) => status == "fulfilled")
+                            .map(({ value }) => value);
+                    }
+
+                    message.send(form);
+                    delete global.temp.welcomeEvent[threadID];
+                }, 1500);
+            };
+    }
+};
