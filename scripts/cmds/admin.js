@@ -1,4 +1,4 @@
-/cmd install owner.js const axios = require("axios");
+const axios = require("axios");
 const fs = require("fs-extra");
 const request = require("request");
 const moment = require("moment-timezone");
